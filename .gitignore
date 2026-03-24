@@ -1,0 +1,6 @@
+.DS_Store
+*.jpg
+*.raf
+.venv/
+/out/
+/target/

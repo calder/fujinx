@@ -1,0 +1,26 @@
+[package]
+name = "fujinx"
+version = "0.1.2"
+edition = "2024"
+description = "Command line tool for Fujifilm X Series cameras"
+license = "MIT"
+homepage = "https://github.com/calder/fujinx"
+repository = "https://github.com/calder/fujinx"
+documentation = "https://github.com/calder/fujinx"
+
+[[bin]]
+name = "fj"
+path = "src/cli/main.rs"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+num_enum = "0.7"
+rusb = "0.9"
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9"
+shellexpand = "3.1.2"
+yansi = "1.0"
+
+[dev-dependencies]
+rstest = "0.25"

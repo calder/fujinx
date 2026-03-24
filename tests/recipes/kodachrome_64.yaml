@@ -1,0 +1,17 @@
+name: Kodachrome 64
+film: ClassicChrome
+grain: StrongSmall
+color_chrome: Strong
+color_chrome_blue: Off
+white_balance: !Temperature 5200
+white_balance_red: 1
+white_balance_blue: -6
+dynamic_range: DR400
+dynamic_range_priority: Off
+exposure: +1/3
+highlight: 0
+shadow: 0.5
+color: 2
+sharpness: 1
+clarity: 3
+high_iso_nr: -4

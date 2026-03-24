@@ -1,0 +1,17 @@
+name: Pacific Blues
+film: ClassicNeg
+grain: StrongLarge
+color_chrome: Strong
+color_chrome_blue: Weak
+white_balance: !Temperature 5800
+white_balance_red: 1
+white_balance_blue: -3
+dynamic_range: DR400
+dynamic_range_priority: Off
+exposure: +2/3
+highlight: -2
+shadow: 3
+color: 4
+sharpness: -2
+clarity: -3
+high_iso_nr: -4
