@@ -24,7 +24,7 @@ mod param_idx {
     pub const CLARITY: usize = 27;
 }
 
-/// Noise reduction: proprietary wire encoding → UI value (-4..+4).
+/// Noise reduction: proprietary wire encoding (u16 bit pattern) → UI value (-4..+4).
 const NR_DECODE: [(i32, i32); 9] = [
     (0x8000, -4),
     (0x7000, -3),

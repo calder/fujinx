@@ -54,6 +54,10 @@ impl Session {
     }
 
     pub fn get_device_prop_value_i16(&mut self, prop_code: u16) -> Result<i16> {
+        Ok(self.get_device_prop_value_u16(prop_code)? as i16)
+    }
+
+    pub fn get_device_prop_value_u16(&mut self, prop_code: u16) -> Result<u16> {
         let data = self.get_device_prop_value_raw(prop_code)?;
         if data.len() < 2 {
             bail!(
@@ -63,7 +67,7 @@ impl Session {
             );
         }
 
-        Ok(i16::from_le_bytes([data[0], data[1]]))
+        Ok(u16::from_le_bytes([data[0], data[1]]))
     }
 
     pub fn get_device_prop_value_string(&mut self, prop_code: u16) -> Result<String> {
@@ -86,6 +90,10 @@ impl Session {
     }
 
     pub fn set_device_prop_value_i16(&mut self, prop_code: u16, value: i16) -> Result<()> {
+        self.set_device_prop_value_u16(prop_code, value as u16)
+    }
+
+    pub fn set_device_prop_value_u16(&mut self, prop_code: u16, value: u16) -> Result<()> {
         self.execute(
             PTP_OC_SET_DEVICE_PROP_VALUE,
             &[prop_code as u32],
@@ -99,16 +107,6 @@ impl Session {
         let mut w = DatasetWriter::new();
         w.write_ptp_string(value);
         self.set_device_prop_value_raw(prop_code, &w.into_bytes())
-    }
-
-    pub fn set_device_prop_value_u16(&mut self, prop_code: u16, value: u16) -> Result<()> {
-        self.execute(
-            PTP_OC_SET_DEVICE_PROP_VALUE,
-            &[prop_code as u32],
-            Some(&value.to_le_bytes()),
-        )?;
-
-        Ok(())
     }
 
     pub fn set_device_prop_value_raw(&mut self, prop_code: u16, data: &[u8]) -> Result<()> {
