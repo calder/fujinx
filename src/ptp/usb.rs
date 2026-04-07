@@ -11,6 +11,11 @@ const PTP_CONTAINER_RESPONSE: u16 = 3;
 const PTP_HEADER_LEN: usize = 12;
 const PTP_RECV_BUF: usize = 512 * 1024;
 
+/// Maximum size of a single bulk transfer. Linux's usbfs has a per-URB
+/// memory cap (default 16 MB) and rejects larger transfers with
+/// `LIBUSB_ERROR_NO_MEM`, so we chunk outgoing data to stay well under it.
+const PTP_SEND_CHUNK: usize = 1024 * 1024;
+
 pub type UsbDevice = rusb::Device<rusb::GlobalContext>;
 
 /// List all connected Fujifilm USB devices.
@@ -171,9 +176,10 @@ impl UsbTransport {
     fn send_raw(&self, data: &[u8]) -> Result<()> {
         let mut offset = 0;
         while offset < data.len() {
+            let end = (offset + PTP_SEND_CHUNK).min(data.len());
             let n = self
                 .handle
-                .write_bulk(self.ep_out, &data[offset..], USB_TIMEOUT)
+                .write_bulk(self.ep_out, &data[offset..end], USB_TIMEOUT)
                 .map_err(|e| Error(e.to_string()))?;
             offset += n;
         }

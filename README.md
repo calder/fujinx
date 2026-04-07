@@ -39,20 +39,20 @@ fj repo list                                            # List community recipe 
 
 |         | Support | Maintainer | Transport |
 | ------- | ------- | ---------- | --------- |
-| Linux   | ❌ | [calder](https://github.com/calder) | [rusb](https://github.com/a1ien/rusb) + [libusb](https://libusb.info/) |
+| Linux   | ✅ | [calder](https://github.com/calder) | [rusb](https://github.com/a1ien/rusb) + [libusb](https://libusb.info/) |
 | Mac     | ✅ | [calder](https://github.com/calder) | [rusb](https://github.com/a1ien/rusb) + [libusb](https://libusb.info/) |
-| Windows | ❌ | wanted |
+| Windows | ❌ | wanted | |
 
 ### 📷 Cameras
 
-| Camera | Maintainer | [💰](https://www.fujifilm-x.com/en-us/products/x-series/ "Price") | [▦](https://www.fujifilm-x.com/en-us/products/x-series/ "Sensor") | [🖼️](src/cmd/convert.rs "RAW Conversion") | [⚙️](src/cmd/config.rs "Configuration Management") | [📷](. "Tethered Shooting") |
-| ------ | ---------- | - | - | - | - | - |
-| [X-M5](https://www.fujifilm-x.com/en-us/products/cameras/x-m5/) | [calder](https://github.com/calder) | $900 | [4️⃣](https://www.fujifilm-x.com/en-us/products/cameras/x-m5/specifications/ "26.1MP X-Trans CMOS 4") | ✅ | ✅ | ❌ |
-| [X-T30 III](https://www.fujifilm-x.com/en-us/products/cameras/x-t30-iii/) | wanted | $1,000 | [4️⃣](https://www.fujifilm-x.com/en-us/products/cameras/x-t30-iii/specifications/ "26.1MP X-Trans CMOS 4") | ❌ | ❌ | ❌ |
-| [X-E5](https://www.fujifilm-x.com/en-us/products/cameras/x-e5/) | wanted | $1,200 | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x-e5/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
-| [X-S20](https://www.fujifilm-x.com/en-us/products/cameras/x-s20/) | wanted | $1,500 | [4️⃣](https://www.fujifilm-x.com/en-us/products/cameras/x-s20/specifications/ "26.1MP X-Trans CMOS 4") | ❌ | ❌ | ❌ |
-| [X-T50](https://www.fujifilm-x.com/en-us/products/cameras/x-t50/) | wanted | $1,600 | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x-t50/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
-| [X-T5](https://www.fujifilm-x.com/en-us/products/cameras/x-t5/) | wanted | $1,700 | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x-t5/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
-| [X100VI](https://www.fujifilm-x.com/en-us/products/cameras/x100vi/) | wanted | $1,800 | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x100vi/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
-| [X-H2](https://www.fujifilm-x.com/en-us/products/cameras/x-h2/) | wanted | $2,300 | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x-h2/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
-| [X-H2s](https://www.fujifilm-x.com/en-us/products/cameras/x-h2s/) | wanted | $2,900 | [5️⃣ HS](https://www.fujifilm-x.com/en-us/products/cameras/x-h2s/specifications/ "26.1MP X-Trans CMOS 5 HS") | ❌ | ❌ | ❌ |
+| Camera | Maintainer | [▦](https://www.fujifilm-x.com/en-us/products/x-series/ "Sensor") | [🖼️](src/cmd/convert.rs "RAW Conversion") | [⚙️](src/cmd/config.rs "Configuration Management") | [📷](. "Tethered Shooting") |
+|-|-|-|-|-|-|
+| [X-M5](https://www.fujifilm-x.com/en-us/products/cameras/x-m5/) | [calder](https://github.com/calder) | [4️⃣](https://www.fujifilm-x.com/en-us/products/cameras/x-m5/specifications/ "26.1MP X-Trans CMOS 4") | ✅ | ✅ | ❌ |
+| [X-T30 III](https://www.fujifilm-x.com/en-us/products/cameras/x-t30-iii/) | wanted | [4️⃣](https://www.fujifilm-x.com/en-us/products/cameras/x-t30-iii/specifications/ "26.1MP X-Trans CMOS 4") | ❌ | ❌ | ❌ |
+| [X-E5](https://www.fujifilm-x.com/en-us/products/cameras/x-e5/) | wanted | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x-e5/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
+| [X-S20](https://www.fujifilm-x.com/en-us/products/cameras/x-s20/) | wanted | [4️⃣](https://www.fujifilm-x.com/en-us/products/cameras/x-s20/specifications/ "26.1MP X-Trans CMOS 4") | ❌ | ❌ | ❌ |
+| [X-T50](https://www.fujifilm-x.com/en-us/products/cameras/x-t50/) | wanted | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x-t50/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
+| [X-T5](https://www.fujifilm-x.com/en-us/products/cameras/x-t5/) | wanted | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x-t5/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
+| [X100VI](https://www.fujifilm-x.com/en-us/products/cameras/x100vi/) | wanted | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x100vi/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
+| [X-H2](https://www.fujifilm-x.com/en-us/products/cameras/x-h2/) | wanted | [5️⃣ HR](https://www.fujifilm-x.com/en-us/products/cameras/x-h2/specifications/ "40.2MP X-Trans CMOS 5 HR") | ❌ | ❌ | ❌ |
+| [X-H2s](https://www.fujifilm-x.com/en-us/products/cameras/x-h2s/) | wanted | [5️⃣ HS](https://www.fujifilm-x.com/en-us/products/cameras/x-h2s/specifications/ "26.1MP X-Trans CMOS 5 HS") | ❌ | ❌ | ❌ |
