@@ -126,6 +126,9 @@ impl Camera {
         let name = self
             .session
             .get_device_prop_value_string(prop::PRESET_NAME)?;
+        let nr = self
+            .session
+            .get_device_prop_value_u16(prop::PRESET_HIGH_ISO_NR)? as i32;
 
         let mut prop_i16 = |code| {
             self.session
@@ -152,7 +155,7 @@ impl Camera {
             shadow: prop_i16(prop::PRESET_SHADOW_TONE)? as f64 / 10.0,
             color: prop_i16(prop::PRESET_COLOR)? as f64 / 10.0,
             sharpness: prop_i16(prop::PRESET_SHARPNESS)? as f64 / 10.0,
-            high_iso_nr: nr_decode(prop_i16(prop::PRESET_HIGH_ISO_NR)?),
+            high_iso_nr: nr_decode(nr),
             clarity: prop_i16(prop::PRESET_CLARITY)? / 10,
         })
     }
