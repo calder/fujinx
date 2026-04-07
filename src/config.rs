@@ -142,7 +142,8 @@ impl Config {
     }
 
     /// Remove a repo by name.
-    pub fn remove_repo(&self, name: &str) -> Result<()> {
+    pub fn remove_repo(&self, name: &str) -> Result<String> {
+        let name = repo_path(name)?;
         let dest = self.dir.join(format!("repos/{name}"));
         if !dest.exists() {
             anyhow::bail!("repo not found: {}", name.paint(crate::BLUE));
@@ -164,7 +165,7 @@ impl Config {
             dir = parent.parent();
         }
 
-        Ok(())
+        Ok(name)
     }
 
     /// Pull latest changes for a repo by name.
@@ -307,19 +308,18 @@ fn read_recipe_file(path: &Path) -> Result<Recipe> {
     Ok(recipe)
 }
 
-/// Extract a repo path from a git URL.
+/// Extract a repo path from a git URL, or pass through a bare path.
 ///
 /// Examples:
 ///   git@github.com:calder/fujixweekly.git -> github.com/calder/fujixweekly
 ///   https://github.com/calder/fujixweekly.git -> github.com/calder/fujixweekly
+///   github.com/calder/fujixweekly           -> github.com/calder/fujixweekly
 fn repo_path(url: &str) -> Result<String> {
     let url = url.trim_end_matches('/').trim_end_matches(".git");
 
     // SSH: git@github.com:calder/fujixweekly
     if let Some(rest) = url.strip_prefix("git@") {
-        let path = rest.replacen(':', "/", 1);
-
-        return Ok(path);
+        return Ok(rest.replacen(':', "/", 1));
     }
 
     // HTTPS: https://github.com/calder/fujixweekly
@@ -330,5 +330,6 @@ fn repo_path(url: &str) -> Result<String> {
         return Ok(rest.to_string());
     }
 
-    anyhow::bail!("could not parse repo path from URL: {url}")
+    // Bare path: github.com/calder/fujixweekly
+    Ok(url.to_string())
 }

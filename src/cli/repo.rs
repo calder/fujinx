@@ -59,11 +59,11 @@ fn add(args: AddArgs) -> Result<()> {
 
 fn del(args: DelArgs) -> Result<()> {
     let config = Config::open()?;
-    config.remove_repo(&args.name)?;
+    let name = config.remove_repo(&args.name)?;
     eprintln!(
         "{} Removed repo: {}",
         crate::done(),
-        args.name.paint(fujinx::BLUE)
+        name.paint(fujinx::BLUE)
     );
 
     Ok(())
