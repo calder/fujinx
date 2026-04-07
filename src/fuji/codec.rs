@@ -1,4 +1,4 @@
-use crate::{Error, Result};
+use anyhow::{Result, bail};
 
 use super::recipe::{DynamicRange, Recipe, WhiteBalance};
 
@@ -92,7 +92,7 @@ pub(super) fn wb_decode(mode: i32, temp: i32) -> Result<WhiteBalance> {
         0x8003 => Ok(WhiteBalance::Fluorescent3),
         0x8006 => Ok(WhiteBalance::Shade),
         0x8007 => Ok(WhiteBalance::Temperature(temp as u32)),
-        _ => Err(Error(format!("unknown white balance mode: {mode:#06X}"))),
+        _ => bail!("unknown white balance mode: {mode:#06X}"),
     }
 }
 

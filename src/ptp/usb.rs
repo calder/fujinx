@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{Error, Result};
+use anyhow::{Result, bail};
 
 const FUJI_VENDOR_ID: u16 = 0x04CB;
 const PTP_INTERFACE_CLASS: u8 = 6;
@@ -20,13 +20,11 @@ pub type UsbDevice = rusb::Device<rusb::GlobalContext>;
 
 /// List all connected Fujifilm USB devices.
 pub fn detect() -> Result<Vec<UsbDevice>> {
-    let devices = rusb::devices().map_err(|e| Error(e.to_string()))?;
+    let devices = rusb::devices()?;
     let mut result = Vec::new();
 
     for device in devices.iter() {
-        let desc = device
-            .device_descriptor()
-            .map_err(|e| Error(e.to_string()))?;
+        let desc = device.device_descriptor()?;
         if desc.vendor_id() == FUJI_VENDOR_ID {
             result.push(device);
         }
@@ -63,11 +61,9 @@ impl UsbTransport {
             std::thread::sleep(Duration::from_millis(200));
         }
 
-        let handle = device.open().map_err(|e| Error(e.to_string()))?;
+        let handle = device.open()?;
 
-        let config = device
-            .active_config_descriptor()
-            .map_err(|e| Error(e.to_string()))?;
+        let config = device.active_config_descriptor()?;
 
         let mut iface_num = None;
         let mut ep_in = None;
@@ -92,19 +88,15 @@ impl UsbTransport {
             }
         }
 
-        let iface = iface_num.ok_or_else(|| Error("no PTP interface found".into()))?;
-        let ep_in = ep_in.ok_or_else(|| Error("no bulk-in endpoint found".into()))?;
-        let ep_out = ep_out.ok_or_else(|| Error("no bulk-out endpoint found".into()))?;
+        let iface = iface_num.ok_or_else(|| anyhow::anyhow!("no PTP interface found"))?;
+        let ep_in = ep_in.ok_or_else(|| anyhow::anyhow!("no bulk-in endpoint found"))?;
+        let ep_out = ep_out.ok_or_else(|| anyhow::anyhow!("no bulk-out endpoint found"))?;
 
         if handle.kernel_driver_active(iface).unwrap_or(false) {
-            handle
-                .detach_kernel_driver(iface)
-                .map_err(|e| Error(e.to_string()))?;
+            handle.detach_kernel_driver(iface)?;
         }
 
-        handle
-            .claim_interface(iface)
-            .map_err(|e| Error(e.to_string()))?;
+        handle.claim_interface(iface)?;
 
         Ok(Self {
             handle,
@@ -161,16 +153,15 @@ impl UsbTransport {
                 data: Vec::new(),
             })
         } else {
-            Err(Error(format!(
-                "unexpected container type {}",
-                container_type
-            )))
+            bail!("unexpected container type {}", container_type)
         }
     }
 
     /// Reset the underlying USB connection, clearing any stale device state.
     pub fn reset(&mut self) -> Result<()> {
-        self.handle.reset().map_err(|e| Error(e.to_string()))
+        self.handle.reset()?;
+
+        Ok(())
     }
 
     fn send_raw(&self, data: &[u8]) -> Result<()> {
@@ -179,8 +170,7 @@ impl UsbTransport {
             let end = (offset + PTP_SEND_CHUNK).min(data.len());
             let n = self
                 .handle
-                .write_bulk(self.ep_out, &data[offset..end], USB_TIMEOUT)
-                .map_err(|e| Error(e.to_string()))?;
+                .write_bulk(self.ep_out, &data[offset..end], USB_TIMEOUT)?;
             offset += n;
         }
 
@@ -191,12 +181,9 @@ impl UsbTransport {
     /// bulk transfers.
     fn recv_container(&self) -> Result<Vec<u8>> {
         let mut chunk = vec![0u8; PTP_RECV_BUF];
-        let n = self
-            .handle
-            .read_bulk(self.ep_in, &mut chunk, USB_TIMEOUT)
-            .map_err(|e| Error(e.to_string()))?;
+        let n = self.handle.read_bulk(self.ep_in, &mut chunk, USB_TIMEOUT)?;
         if n < PTP_HEADER_LEN {
-            return Err(Error("response too short".into()));
+            bail!("response too short");
         }
 
         let container_len = u32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]) as usize;
@@ -205,10 +192,7 @@ impl UsbTransport {
         buf.extend_from_slice(&chunk[..n]);
 
         while buf.len() < container_len {
-            let n = self
-                .handle
-                .read_bulk(self.ep_in, &mut chunk, USB_TIMEOUT)
-                .map_err(|e| Error(e.to_string()))?;
+            let n = self.handle.read_bulk(self.ep_in, &mut chunk, USB_TIMEOUT)?;
             buf.extend_from_slice(&chunk[..n]);
         }
 
@@ -236,14 +220,11 @@ fn build_container(container_type: u16, code: u16, transaction_id: u32, payload:
 
 fn parse_response_code(data: &[u8]) -> Result<u16> {
     if data.len() < PTP_HEADER_LEN {
-        return Err(Error("response too short".into()));
+        bail!("response too short");
     }
     let container_type = u16::from_le_bytes([data[4], data[5]]);
     if container_type != PTP_CONTAINER_RESPONSE {
-        return Err(Error(format!(
-            "expected response container (type 3), got type {}",
-            container_type
-        )));
+        bail!("expected response container (type 3), got type {container_type}");
     }
 
     Ok(u16::from_le_bytes([data[6], data[7]]))

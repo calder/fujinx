@@ -1,4 +1,4 @@
-use crate::{Error, Result};
+use anyhow::{Result, ensure};
 
 /// Reader for PTP dataset fields (little-endian, PTP string format).
 pub(super) struct DatasetReader<'a> {
@@ -16,18 +16,14 @@ impl<'a> DatasetReader<'a> {
     }
 
     pub fn skip(&mut self, n: usize) -> Result<()> {
-        if self.remaining() < n {
-            return Err(Error("unexpected end of dataset".into()));
-        }
+        ensure!(self.remaining() >= n, "unexpected end of dataset");
         self.pos += n;
 
         Ok(())
     }
 
     pub fn read_u16(&mut self) -> Result<u16> {
-        if self.remaining() < 2 {
-            return Err(Error("unexpected end of dataset".into()));
-        }
+        ensure!(self.remaining() >= 2, "unexpected end of dataset");
         let v = u16::from_le_bytes(self.data[self.pos..self.pos + 2].try_into().unwrap());
         self.pos += 2;
 
@@ -35,9 +31,7 @@ impl<'a> DatasetReader<'a> {
     }
 
     pub fn read_u32(&mut self) -> Result<u32> {
-        if self.remaining() < 4 {
-            return Err(Error("unexpected end of dataset".into()));
-        }
+        ensure!(self.remaining() >= 4, "unexpected end of dataset");
         let v = u32::from_le_bytes(self.data[self.pos..self.pos + 4].try_into().unwrap());
         self.pos += 4;
 
@@ -46,18 +40,17 @@ impl<'a> DatasetReader<'a> {
 
     /// Read a PTP string: u8 length (in chars including null), then UTF-16LE chars.
     pub fn read_ptp_string(&mut self) -> Result<String> {
-        if self.remaining() < 1 {
-            return Err(Error("unexpected end of dataset".into()));
-        }
+        ensure!(self.remaining() >= 1, "unexpected end of dataset");
         let num_chars = self.data[self.pos] as usize;
         self.pos += 1;
         if num_chars == 0 {
             return Ok(String::new());
         }
         let byte_len = num_chars * 2;
-        if self.remaining() < byte_len {
-            return Err(Error("string extends past end of dataset".into()));
-        }
+        ensure!(
+            self.remaining() >= byte_len,
+            "string extends past end of dataset"
+        );
         let u16s: Vec<u16> = (0..num_chars)
             .map(|i| {
                 let off = self.pos + i * 2;

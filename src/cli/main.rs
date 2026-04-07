@@ -6,8 +6,7 @@ mod progress;
 mod recipe;
 mod repo;
 
-use clap::Parser;
-use clap::Subcommand;
+use clap::{Parser, Subcommand};
 use yansi::Paint;
 
 use crate::help::{BANNER, STYLES};

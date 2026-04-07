@@ -1,10 +1,11 @@
 use std::fmt;
 use std::time::Duration;
 
+use anyhow::{Result, anyhow, bail};
 use yansi::{Paint, Style};
 
 use crate::ptp::{CameraInfo, ObjectInfo, Session, UsbDevice};
-use crate::{BLUE, Error, RED, Result, SUPPORTED_MODELS, YELLOW};
+use crate::{BLUE, RED, SUPPORTED_MODELS, YELLOW};
 
 use super::codec::{
     dr_decode, dr_encode, encode_recipe, nr_decode, nr_encode, wb_decode, wb_encode,
@@ -38,7 +39,7 @@ impl Camera {
         let detected = crate::ptp::detect()?;
         let camera = detected
             .first()
-            .ok_or_else(|| Error("no cameras found".into()))?;
+            .ok_or_else(|| anyhow!("no cameras found"))?;
 
         Self::open(camera)
     }
@@ -114,7 +115,7 @@ impl Camera {
             }
         }
 
-        Err(Error("timed out waiting for converted JPEG".into()))
+        bail!("timed out waiting for converted JPEG")
     }
 
     /// Read a custom preset slot (1–7) and return its recipe.

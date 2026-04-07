@@ -1,4 +1,4 @@
-use crate::{Error, Result};
+use anyhow::{Result, bail};
 
 use super::camera_info::CameraInfo;
 use super::dataset::{DatasetReader, DatasetWriter};
@@ -56,11 +56,11 @@ impl Session {
     pub fn get_device_prop_value_i16(&mut self, prop_code: u16) -> Result<i16> {
         let data = self.get_device_prop_value_raw(prop_code)?;
         if data.len() < 2 {
-            return Err(Error(format!(
+            bail!(
                 "expected 2 bytes for property 0x{:04X}, got {}",
                 prop_code,
                 data.len()
-            )));
+            );
         }
 
         Ok(i16::from_le_bytes([data[0], data[1]]))
@@ -189,10 +189,7 @@ fn parse_u32_array(data: &[u8]) -> Result<Vec<u32>> {
 
 fn check_response(operation: u16, response_code: u16) -> Result<()> {
     if response_code != PTP_RC_OK {
-        return Err(Error(format!(
-            "operation 0x{:04x} failed: 0x{:04x}",
-            operation, response_code
-        )));
+        bail!("operation 0x{operation:04x} failed: 0x{response_code:04x}");
     }
 
     Ok(())
