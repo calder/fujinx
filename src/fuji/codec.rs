@@ -3,14 +3,14 @@ use anyhow::{Result, bail};
 use super::recipe::{DynamicRange, Recipe, WhiteBalance};
 
 /// Parameter indices within the binary conversion profile.
-mod param_idx {
+pub(super) mod param_idx {
     pub const EXPOSURE_BIAS: usize = 4;
     pub const DYNAMIC_RANGE: usize = 6;
     pub const DYNAMIC_RANGE_PRIORITY: usize = 7;
     pub const FILM_SIMULATION: usize = 8;
     pub const GRAIN_EFFECT: usize = 9;
     pub const COLOR_CHROME: usize = 10;
-    pub const SMOOTH_SKIN: usize = 11;
+    pub const WB_SHOOT_COND: usize = 11;
     pub const WHITE_BALANCE: usize = 12;
     pub const WB_SHIFT_R: usize = 13;
     pub const WB_SHIFT_B: usize = 14;
@@ -51,6 +51,12 @@ pub(super) fn nr_encode(ui: i32) -> i32 {
         .find(|(_, val)| *val == ui)
         .map(|(enc, _)| *enc)
         .unwrap_or(0x2000)
+}
+
+pub(super) fn get_param(data: &[u8], index: usize) -> i32 {
+    let num_params = u16::from_le_bytes([data[0], data[1]]) as usize;
+    let off = data.len() - num_params * 4 + index * 4;
+    i32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]])
 }
 
 fn set_param(data: &mut [u8], index: usize, value: i32) {
@@ -113,7 +119,7 @@ pub(super) fn encode_recipe(recipe: &Recipe, data: &mut [u8]) {
         param_idx::COLOR_CHROME_BLUE,
         recipe.color_chrome_blue as i32,
     );
-    set_param(data, param_idx::SMOOTH_SKIN, 1); // Off
+    set_param(data, param_idx::WB_SHOOT_COND, 2); // Override WB
     let (wb_mode, wb_temp) = wb_encode(&recipe.white_balance);
     set_param(data, param_idx::WHITE_BALANCE, wb_mode);
     if let Some(t) = wb_temp {

@@ -224,7 +224,7 @@ pub enum DynamicRangePriority {
 }
 
 /// Dynamic range modes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum DynamicRange {
     DR100,
     DR200,

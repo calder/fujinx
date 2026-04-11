@@ -10,9 +10,9 @@
 
 * [ ] Official Rust API.
 
-# v0.5 (planned)
+# v0.5
 
-* [ ] Fix Exposure Compensation.
+* Fix conversion white balance.
 
 # v0.4
 

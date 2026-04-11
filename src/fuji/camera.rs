@@ -8,9 +8,10 @@ use crate::ptp::{CameraInfo, ObjectInfo, Session, UsbDevice};
 use crate::{BLUE, RED, SUPPORTED_MODELS, YELLOW};
 
 use super::codec::{
-    dr_decode, dr_encode, encode_recipe, nr_decode, nr_encode, wb_decode, wb_encode,
+    dr_decode, dr_encode, encode_recipe, get_param, nr_decode, nr_encode, param_idx, wb_decode,
+    wb_encode,
 };
-use super::recipe::Recipe;
+use super::recipe::{DynamicRange, Recipe};
 use super::{format, prop};
 
 /// Fuji vendor PTP operation codes.
@@ -19,7 +20,11 @@ const FUJI_OC_SEND_OBJECT: u16 = 0x900D;
 
 /// Opaque conversion profile read from the camera for a loaded RAF.
 /// Pass to [`Camera::render`] to apply a recipe.
-pub struct Profile(Vec<u8>);
+pub struct Profile {
+    data: Vec<u8>,
+    /// Maximum dynamic range the image supports (based on shooting ISO).
+    max_dr: DynamicRange,
+}
 
 /// A connected camera.
 pub struct Camera {
@@ -49,13 +54,11 @@ impl Camera {
         let mut session = Session::open(camera)?;
         let info = session.get_camera_info()?;
         let supported = SUPPORTED_MODELS.contains(&info.model.as_str());
-        let cam = Self {
+        Ok(Self {
             session,
             info,
             supported,
-        };
-
-        Ok(cam)
+        })
     }
 
     /// Get camera info.
@@ -83,13 +86,19 @@ impl Camera {
             .session
             .get_device_prop_value_raw(prop::RAW_CONVERSION_PROFILE)?;
 
-        Ok(Profile(data))
+        let max_dr = dr_decode(get_param(&data, param_idx::DYNAMIC_RANGE));
+
+        Ok(Profile { data, max_dr })
     }
 
     /// Apply a recipe to a loaded profile and convert to JPEG.
     pub fn render(&mut self, profile: &Profile, recipe: &Recipe) -> Result<Vec<u8>> {
-        let mut data = profile.0.clone();
-        encode_recipe(recipe, &mut data);
+        let mut recipe = recipe.clone();
+        recipe.dynamic_range = recipe.dynamic_range.min(profile.max_dr);
+
+        let mut data = profile.data.clone();
+        encode_recipe(&recipe, &mut data);
+
         self.session
             .set_device_prop_value_raw(prop::RAW_CONVERSION_PROFILE, &data)?;
 
