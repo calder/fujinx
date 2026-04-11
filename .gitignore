@@ -1,7 +1,5 @@
 .DS_Store
-*.jpg
-*.raf
 .venv/
-/out/
+out/
+tmp/
 /target/
-/tmp/
