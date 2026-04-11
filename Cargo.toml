@@ -1,6 +1,6 @@
 [package]
 name = "fujinx"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2024"
 description = "Command line tools for Fujifilm X Series cameras"
 license = "MIT"
