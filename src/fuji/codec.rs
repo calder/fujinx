@@ -5,6 +5,9 @@ use super::recipe::{DynamicRange, Recipe, WhiteBalance};
 /// Parameter indices within the binary conversion profile.
 pub(super) mod param_idx {
     pub const IMAGE_QUALITY: usize = 4;
+    /// Exposure bias is already baked into the RAF at capture time, so we
+    /// don't write it during conversion. Kept here as documentation.
+    #[allow(unused)]
     pub const EXPOSURE_BIAS: usize = 5;
     pub const DYNAMIC_RANGE: usize = 6;
     pub const DYNAMIC_RANGE_PRIORITY: usize = 7;
@@ -142,11 +145,8 @@ pub(super) fn encode_recipe(recipe: &Recipe, data: &mut [u8]) {
         param_idx::DYNAMIC_RANGE_PRIORITY,
         recipe.dynamic_range_priority as i32,
     );
-    set_param(
-        data,
-        param_idx::EXPOSURE_BIAS,
-        (recipe.exposure * 1000.0).round() as i32,
-    );
+    // Exposure bias is baked into the RAF at capture time; applying it again
+    // here would double-count. Leave the profile's as-shot value alone.
     set_param(
         data,
         param_idx::HIGHLIGHT_TONE,
