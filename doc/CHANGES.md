@@ -1,7 +1,3 @@
-# v0.8 (planned)
-
-* [ ] Handle monochrome color filters.
-
 # v0.7 (planned)
 
 * [ ] Add Python bindings.
