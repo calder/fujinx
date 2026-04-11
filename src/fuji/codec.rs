@@ -4,7 +4,8 @@ use super::recipe::{DynamicRange, Recipe, WhiteBalance};
 
 /// Parameter indices within the binary conversion profile.
 pub(super) mod param_idx {
-    pub const EXPOSURE_BIAS: usize = 4;
+    pub const IMAGE_QUALITY: usize = 4;
+    pub const EXPOSURE_BIAS: usize = 5;
     pub const DYNAMIC_RANGE: usize = 6;
     pub const DYNAMIC_RANGE_PRIORITY: usize = 7;
     pub const FILM_SIMULATION: usize = 8;
@@ -110,7 +111,11 @@ pub(super) fn dr_decode(raw: i32) -> DynamicRange {
     }
 }
 
+/// SDK image quality: FINE.
+const IMAGE_QUALITY_FINE: i32 = 2;
+
 pub(super) fn encode_recipe(recipe: &Recipe, data: &mut [u8]) {
+    set_param(data, param_idx::IMAGE_QUALITY, IMAGE_QUALITY_FINE);
     set_param(data, param_idx::FILM_SIMULATION, recipe.film as i32);
     set_param(data, param_idx::GRAIN_EFFECT, recipe.grain as i32);
     set_param(data, param_idx::COLOR_CHROME, recipe.color_chrome as i32);

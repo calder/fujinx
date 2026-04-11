@@ -9,6 +9,7 @@
 # v0.5
 
 * Fix conversion white balance.
+* Fix image quality.
 
 # v0.4
 
