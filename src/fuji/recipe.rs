@@ -246,6 +246,8 @@ pub enum DynamicRange {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum WhiteBalance {
     Auto,
+    AutoWhitePriority,
+    AutoAmbiancePriority,
     Daylight,
     Incandescent,
     Underwater,
@@ -341,6 +343,8 @@ impl fmt::Display for WhiteBalance {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Auto => write!(f, "Auto"),
+            Self::AutoWhitePriority => write!(f, "Auto White Priority"),
+            Self::AutoAmbiancePriority => write!(f, "Auto Ambiance Priority"),
             Self::Daylight => write!(f, "Daylight"),
             Self::Incandescent => write!(f, "Incandescent"),
             Self::Underwater => write!(f, "Underwater"),

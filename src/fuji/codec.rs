@@ -73,6 +73,8 @@ fn set_param(data: &mut [u8], index: usize, value: i32) {
 pub(super) fn wb_encode(wb: &WhiteBalance) -> (i32, Option<i32>) {
     match wb {
         WhiteBalance::Auto => (0x0002, None),
+        WhiteBalance::AutoWhitePriority => (0x8020, None),
+        WhiteBalance::AutoAmbiancePriority => (0x8021, None),
         WhiteBalance::Daylight => (0x0004, None),
         WhiteBalance::Incandescent => (0x0006, None),
         WhiteBalance::Underwater => (0x0008, None),
@@ -95,6 +97,8 @@ pub(super) fn dr_encode(dr: &DynamicRange) -> i32 {
 pub(super) fn wb_decode(mode: i32, temp: i32) -> Result<WhiteBalance> {
     match mode {
         0 | 0x0002 => Ok(WhiteBalance::Auto),
+        0x8020 => Ok(WhiteBalance::AutoWhitePriority),
+        0x8021 => Ok(WhiteBalance::AutoAmbiancePriority),
         0x0004 => Ok(WhiteBalance::Daylight),
         0x0006 => Ok(WhiteBalance::Incandescent),
         0x0008 => Ok(WhiteBalance::Underwater),
