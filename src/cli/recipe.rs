@@ -80,7 +80,7 @@ pub fn recipe(args: RecipeCmd) -> Result<()> {
 }
 
 fn label(s: &str) -> String {
-    format!("{:>14}", s)
+    format!("{:>18}", s)
 }
 
 fn fmt_i32(n: i32) -> String {
@@ -148,6 +148,11 @@ fn print_recipe(r: &fujinx::Recipe) {
         "  {} {}",
         label("High ISO NR:").dim(),
         fmt_i32(r.high_iso_nr)
+    );
+    println!(
+        "  {} {}",
+        label("Portrait Enhancer:").dim(),
+        r.portrait_enhancer
     );
 }
 

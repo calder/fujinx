@@ -11,7 +11,7 @@ use super::codec::{
     dr_decode, dr_encode, encode_recipe, get_param, nr_decode, nr_encode, param_idx, wb_decode,
     wb_encode,
 };
-use super::recipe::{DynamicRange, Recipe};
+use super::recipe::{DynamicRange, PortraitEnhancer, Recipe};
 use super::{format, prop};
 
 /// Fuji vendor PTP operation codes.
@@ -166,6 +166,10 @@ impl Camera {
             sharpness: prop_i16(prop::PRESET_SHARPNESS)? as f64 / 10.0,
             high_iso_nr: nr_decode(nr),
             clarity: prop_i16(prop::PRESET_CLARITY)? / 10,
+            // Portrait Enhancer is per-slot in the camera UI but not exposed
+            // by any of the preset PTP properties on X-M5, so we can't read it
+            // back from the slot — default to Off.
+            portrait_enhancer: PortraitEnhancer::Off,
         })
     }
 
