@@ -19,27 +19,8 @@ impl Config {
     pub fn open() -> Result<Config> {
         let dir = std::env::var("FUJINX_CONFIG").unwrap_or_else(|_| "~/.fujinx".to_string());
         let dir = PathBuf::from(shellexpand::tilde(&dir).as_ref());
-        let recipes_dir = dir.join("recipes");
-        std::fs::create_dir_all(&recipes_dir)?;
+        std::fs::create_dir_all(dir.join("recipes"))?;
         std::fs::create_dir_all(dir.join("repos"))?;
-
-        if !recipes_dir.join(".git").exists() {
-            let status = Command::new("git")
-                .args(["init", "-q"])
-                .current_dir(&recipes_dir)
-                .status()?;
-            if !status.success() {
-                anyhow::bail!("git init failed in recipes directory");
-            }
-
-            let status = Command::new("git")
-                .args(["commit", "--allow-empty", "-m", "Initial commit.", "-q"])
-                .current_dir(&recipes_dir)
-                .status()?;
-            if !status.success() {
-                anyhow::bail!("git initial commit failed in recipes directory");
-            }
-        }
 
         Ok(Config { dir })
     }
@@ -80,7 +61,6 @@ impl Config {
         }
         let yaml = serde_yaml::to_string(recipe)?;
         std::fs::write(&path, yaml)?;
-        self.commit_recipe(name, "Update")?;
 
         Ok(path)
     }
@@ -91,29 +71,6 @@ impl Config {
             anyhow::bail!("recipe not found: {}", name.paint(crate::BLUE));
         }
         std::fs::remove_file(&path)?;
-        self.commit_recipe(name, "Delete")?;
-
-        Ok(())
-    }
-
-    fn commit_recipe(&self, name: &str, action: &str) -> Result<()> {
-        let recipes_dir = self.dir.join("recipes");
-        let status = Command::new("git")
-            .args(["add", "-A"])
-            .current_dir(&recipes_dir)
-            .status()?;
-        if !status.success() {
-            anyhow::bail!("git add failed in recipes directory");
-        }
-
-        let message = format!("{action} {name}.");
-        let status = Command::new("git")
-            .args(["commit", "-m", &message, "--allow-empty-message", "-q"])
-            .current_dir(&recipes_dir)
-            .status()?;
-        if !status.success() {
-            // Not an error — nothing to commit (e.g. saving identical content).
-        }
 
         Ok(())
     }
