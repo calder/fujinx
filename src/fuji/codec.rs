@@ -26,7 +26,6 @@ pub(super) mod param_idx {
     pub const NOISE_REDUCTION: usize = 20;
     pub const COLOR_CHROME_BLUE: usize = 25;
     pub const CLARITY: usize = 27;
-    pub const PORTRAIT_ENHANCER: usize = 29;
 }
 
 /// Noise reduction: proprietary wire encoding (u16 bit pattern) → UI value (-4..+4).
@@ -188,9 +187,4 @@ pub(super) fn encode_recipe(recipe: &Recipe, data: &mut [u8]) {
         nr_encode(recipe.high_iso_nr),
     );
     set_param(data, param_idx::CLARITY, recipe.clarity * 10);
-    set_param(
-        data,
-        param_idx::PORTRAIT_ENHANCER,
-        recipe.portrait_enhancer as i32,
-    );
 }

@@ -38,8 +38,6 @@ pub struct Recipe {
     pub clarity: i32,
     #[serde(default)]
     pub high_iso_nr: i32,
-    #[serde(default)]
-    pub portrait_enhancer: PortraitEnhancer,
 }
 
 /// Serde for tenth-stop decimals. Whole numbers serialize as integers (no `.0` suffix).
@@ -246,17 +244,6 @@ pub enum ColorChromeEffect {
     Strong = 3,
 }
 
-/// Portrait Enhancer (skin smoothing) levels.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
-#[repr(i32)]
-pub enum PortraitEnhancer {
-    #[default]
-    Off = 1,
-    Weak = 2,
-    Medium = 3,
-    Strong = 4,
-}
-
 /// D-Range Priority modes.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
 #[repr(i32)]
@@ -338,17 +325,6 @@ impl fmt::Display for ColorChromeEffect {
         match self {
             Self::Off => write!(f, "Off"),
             Self::Weak => write!(f, "Weak"),
-            Self::Strong => write!(f, "Strong"),
-        }
-    }
-}
-
-impl fmt::Display for PortraitEnhancer {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Off => write!(f, "Off"),
-            Self::Weak => write!(f, "Weak"),
-            Self::Medium => write!(f, "Medium"),
             Self::Strong => write!(f, "Strong"),
         }
     }

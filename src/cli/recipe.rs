@@ -149,11 +149,6 @@ fn print_recipe(r: &fujinx::Recipe) {
         label("High ISO NR:").dim(),
         fmt_i32(r.high_iso_nr)
     );
-    println!(
-        "  {} {}",
-        label("Portrait Enhancer:").dim(),
-        r.portrait_enhancer
-    );
 }
 
 fn show(args: ShowArgs) -> Result<()> {
