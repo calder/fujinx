@@ -8,10 +8,10 @@ use crate::ptp::{CameraInfo, ObjectInfo, Session, UsbDevice};
 use crate::{BLUE, RED, SUPPORTED_MODELS, YELLOW};
 
 use super::codec::{
-    dr_decode, dr_encode, encode_recipe, get_param, nr_decode, nr_encode, param_idx, wb_decode,
-    wb_encode,
+    dr_decode, dr_encode, encode_recipe, get_param, grain_decode, nr_decode, nr_encode, param_idx,
+    wb_decode, wb_encode,
 };
-use super::recipe::{DynamicRange, PortraitEnhancer, Recipe};
+use super::recipe::{DynamicRange, FilmSimulation, PortraitEnhancer, Recipe};
 use super::{format, prop};
 
 /// Fuji vendor PTP operation codes.
@@ -148,10 +148,16 @@ impl Camera {
         let wb_mode = prop_i16(prop::PRESET_WHITE_BALANCE)? & 0xFFFF;
         let wb_temp = prop_i16(prop::PRESET_WB_COLOR_TEMP)?;
 
+        let film: FilmSimulation = prop_i16(prop::PRESET_FILM_SIMULATION)?.try_into()?;
+        let color = match film.is_monochrome() {
+            true => 0.0,
+            false => prop_i16(prop::PRESET_COLOR)? as f64 / 10.0,
+        };
+
         Ok(Recipe {
             name,
-            film: prop_i16(prop::PRESET_FILM_SIMULATION)?.try_into()?,
-            grain: prop_i16(prop::PRESET_GRAIN_EFFECT)?.try_into()?,
+            film,
+            grain: grain_decode(prop_i16(prop::PRESET_GRAIN_EFFECT)?)?,
             color_chrome: prop_i16(prop::PRESET_COLOR_CHROME)?.try_into()?,
             color_chrome_blue: prop_i16(prop::PRESET_COLOR_CHROME_BLUE)?.try_into()?,
             white_balance: wb_decode(wb_mode, wb_temp)?,
@@ -162,7 +168,7 @@ impl Camera {
             exposure: 0.0,
             highlight: prop_i16(prop::PRESET_HIGHLIGHT_TONE)? as f64 / 10.0,
             shadow: prop_i16(prop::PRESET_SHADOW_TONE)? as f64 / 10.0,
-            color: prop_i16(prop::PRESET_COLOR)? as f64 / 10.0,
+            color,
             sharpness: prop_i16(prop::PRESET_SHARPNESS)? as f64 / 10.0,
             high_iso_nr: nr_decode(nr),
             clarity: prop_i16(prop::PRESET_CLARITY)? / 10,
@@ -208,7 +214,9 @@ impl Camera {
             prop::PRESET_SHADOW_TONE,
             (recipe.shadow * 10.0).round() as i32,
         )?;
-        set_i16(prop::PRESET_COLOR, (recipe.color * 10.0).round() as i32)?;
+        if !recipe.film.is_monochrome() {
+            set_i16(prop::PRESET_COLOR, (recipe.color * 10.0).round() as i32)?;
+        }
         set_i16(
             prop::PRESET_SHARPNESS,
             (recipe.sharpness * 10.0).round() as i32,

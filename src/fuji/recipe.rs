@@ -8,26 +8,37 @@ use serde::{Deserialize, Serialize};
 pub struct Recipe {
     pub name: String,
     pub film: FilmSimulation,
+    #[serde(default)]
     pub grain: GrainEffect,
+    #[serde(default)]
     pub color_chrome: ColorChromeEffect,
+    #[serde(default)]
     pub color_chrome_blue: ColorChromeEffect,
+    #[serde(default)]
     pub white_balance: WhiteBalance,
+    #[serde(default)]
     pub white_balance_red: i32,
+    #[serde(default)]
     pub white_balance_blue: i32,
+    #[serde(default)]
     pub dynamic_range: DynamicRange,
+    #[serde(default)]
     pub dynamic_range_priority: DynamicRangePriority,
-    #[serde(with = "third_stops")]
+    #[serde(default, with = "third_stops")]
     pub exposure: f64,
-    #[serde(with = "tenth_stops")]
+    #[serde(default, with = "tenth_stops")]
     pub highlight: f64,
-    #[serde(with = "tenth_stops")]
+    #[serde(default, with = "tenth_stops")]
     pub shadow: f64,
-    #[serde(with = "tenth_stops")]
+    #[serde(default, with = "tenth_stops")]
     pub color: f64,
-    #[serde(with = "tenth_stops")]
+    #[serde(default, with = "tenth_stops")]
     pub sharpness: f64,
+    #[serde(default)]
     pub clarity: i32,
+    #[serde(default)]
     pub high_iso_nr: i32,
+    #[serde(default)]
     pub portrait_enhancer: PortraitEnhancer,
 }
 
@@ -194,10 +205,30 @@ pub enum FilmSimulation {
     RealaAce = 20,
 }
 
+impl FilmSimulation {
+    /// Whether this is a black-and-white film simulation. The camera locks the
+    /// Color (saturation) parameter for these, rejecting any write to it.
+    pub fn is_monochrome(self) -> bool {
+        matches!(
+            self,
+            Self::Monochrome
+                | Self::MonochromeY
+                | Self::MonochromeR
+                | Self::MonochromeG
+                | Self::Sepia
+                | Self::Acros
+                | Self::AcrosY
+                | Self::AcrosR
+                | Self::AcrosG
+        )
+    }
+}
+
 /// Grain effect levels.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
 #[repr(i32)]
 pub enum GrainEffect {
+    #[default]
     Off = 1,
     WeakSmall = 2,
     StrongSmall = 3,
@@ -206,18 +237,20 @@ pub enum GrainEffect {
 }
 
 /// Color Chrome Effect levels.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
 #[repr(i32)]
 pub enum ColorChromeEffect {
+    #[default]
     Off = 1,
     Weak = 2,
     Strong = 3,
 }
 
 /// Portrait Enhancer (skin smoothing) levels.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
 #[repr(i32)]
 pub enum PortraitEnhancer {
+    #[default]
     Off = 1,
     Weak = 2,
     Medium = 3,
@@ -225,9 +258,10 @@ pub enum PortraitEnhancer {
 }
 
 /// D-Range Priority modes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, TryFromPrimitive, Serialize, Deserialize)]
 #[repr(i32)]
 pub enum DynamicRangePriority {
+    #[default]
     Off = 0,
     Auto = 1,
     Weak = 2,
@@ -235,16 +269,18 @@ pub enum DynamicRangePriority {
 }
 
 /// Dynamic range modes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum DynamicRange {
+    #[default]
     DR100,
     DR200,
     DR400,
 }
 
 /// White balance modes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum WhiteBalance {
+    #[default]
     Auto,
     AutoWhitePriority,
     AutoAmbiancePriority,

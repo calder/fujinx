@@ -1,6 +1,6 @@
 use anyhow::{Result, bail};
 
-use super::recipe::{DynamicRange, Recipe, WhiteBalance};
+use super::recipe::{DynamicRange, GrainEffect, Recipe, WhiteBalance};
 
 /// Parameter indices within the binary conversion profile.
 pub(super) mod param_idx {
@@ -109,6 +109,20 @@ pub(super) fn wb_decode(mode: i32, temp: i32) -> Result<WhiteBalance> {
         0x8007 => Ok(WhiteBalance::Temperature(temp as u32)),
         _ => bail!("unknown white balance mode: {mode:#06X}"),
     }
+}
+
+/// Decode the preset grain effect property (0xD195).
+///
+/// Values 1–5 map directly to [`GrainEffect`]. The camera reports "Off" as 6
+/// or 7 (and coerces a written 1 to one of those on readback), so fold those
+/// back to [`GrainEffect::Off`].
+pub(super) fn grain_decode(raw: i32) -> Result<GrainEffect> {
+    let value = match raw {
+        6 | 7 => GrainEffect::Off as i32,
+        _ => raw,
+    };
+
+    Ok(value.try_into()?)
 }
 
 pub(super) fn dr_decode(raw: i32) -> DynamicRange {
